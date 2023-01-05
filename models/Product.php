@@ -5,11 +5,12 @@ class Product {
 	private $connection;
 	private $connection_schema;
 
-	public $id;
-	public $title;
-	public $description;
-	public $creation_date;
-	public $id_category;
+	private $id;
+	private $title;
+	private $description;
+	private $creation_date;
+	private $id_category;
+	private $category;
 
 	public function __construct($db) {
 		$this->connection = $db['connection'];
@@ -33,7 +34,7 @@ class Product {
 	}
 
 	public function getProducts() {
-		$query = "SELECT prod.*, cate.name FROM $this->connection_schema.$this->table prod LEFT JOIN $this->connection_schema.category cate ON cate.id = prod.id_category ORDER BY prod.creation_date DESC;";
+		$query = "SELECT prod.*, cate.name as category FROM $this->connection_schema.$this->table prod LEFT JOIN $this->connection_schema.category cate ON cate.id = prod.id_category ORDER BY prod.creation_date DESC;";
 
 		$statement = $this->connection->prepare($query);
 		$statement->execute();
@@ -41,7 +42,7 @@ class Product {
 	}
 
 	public function getProduct() {
-		$query = "SELECT prod.*, cate.name FROM $this->connection_schema.$this->table prod LEFT JOIN $this->connection_schema.category cate ON cate.id = prod.id_category WHERE prod.id = ? LIMIT 1;";
+		$query = "SELECT prod.*, cate.name as c_name FROM $this->connection_schema.$this->table prod LEFT JOIN $this->connection_schema.category cate ON cate.id = prod.id_category WHERE prod.id = ? LIMIT 1;";
 
 		$statement = $this->connection->prepare($query);
 		$statement->bindParam(1, $this->id);
@@ -55,12 +56,13 @@ class Product {
 			$this->description = $product[0]['description'];
 			$this->creation_date = $product[0]['creation_date'];
 			$this->id_category = $product[0]['id_category'];
+			$this->category = $product[0]['c_name'];
 			return [[
 				'id' => $product[0]['id'],
 				'title' => $product[0]['title'],
 				'description' => $product[0]['description'],
 				'creation_date' => $product[0]['creation_date'],
-				'id_category' => $product[0]['id_category']
+				'category' => $product[0]['c_name']
 			]];
 		} else {
 			return [];
