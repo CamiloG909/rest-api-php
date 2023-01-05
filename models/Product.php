@@ -16,6 +16,22 @@ class Product {
 		$this->connection_schema = $db['schema'];
 	}
 
+	public function __set($prop, $value) {
+		if(property_exists($this, $prop)) {
+			$this->$prop = $value;
+		} else {
+			die();
+		}
+	}
+
+	public function __get($prop) {
+		if(property_exists($this, $prop)) {
+			return $this->$prop;
+		} else {
+			die();
+		}
+	}
+
 	public function getProducts() {
 		$query = "SELECT prod.*, cate.name FROM $this->connection_schema.$this->table prod LEFT JOIN $this->connection_schema.category cate ON cate.id = prod.id_category ORDER BY prod.creation_date DESC;";
 
@@ -31,13 +47,24 @@ class Product {
 		$statement->bindParam(1, $this->id);
 		$statement->execute();
 
-		$product = $statement->fetch(PDO::FETCH_ASSOC);
+		$product = $statement->fetchAll(PDO::FETCH_ASSOC);
 
-		$this->id = $product['id'];
-		$this->title = $product['title'];
-		$this->description = $product['description'];
-		$this->creation_date = $product['creation_date'];
-		$this->id_category = $product['id_category'];
+		if(count($product) == 1) {
+			$this->id = $product[0]['id'];
+			$this->title = $product[0]['title'];
+			$this->description = $product[0]['description'];
+			$this->creation_date = $product[0]['creation_date'];
+			$this->id_category = $product[0]['id_category'];
+			return [[
+				'id' => $product[0]['id'],
+				'title' => $product[0]['title'],
+				'description' => $product[0]['description'],
+				'creation_date' => $product[0]['creation_date'],
+				'id_category' => $product[0]['id_category']
+			]];
+		} else {
+			return [];
+		}
 	}
 
 	public function addProduct() {

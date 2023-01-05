@@ -3,7 +3,7 @@
 header('Access-Control-Allow-Origin: *');
 header('Content-Type: application/json');
 
-require '../../config.php';
+require '../../functions.php';
 
 include_once '../../Database.php';
 include_once '../../models/Category.php';
@@ -20,16 +20,16 @@ if($method == 'GET') {
 		// GET CATEGORY
 		$category->__set('id', $_GET['id']);
 
-		if($category->__get('id') != '00') {
+		if(count($category->getCategory()) > 0) {
 			$response = [
 				'id' => $category->__get('id'),
 				'name' => $category->__get('name'),
 				'creation_date' => $category->__get('creation_date')
 			];
 
-			echo json_encode(['data' => $response]);
+			sendResponse($response);
 		} else {
-			echo json_encode(['data' => [], 'message' => 'Category not found']);
+			sendResponse([], 404, 'Category not found');
 		}
 	} else {
 		// GET ALL CATEGORIES
@@ -48,12 +48,61 @@ if($method == 'GET') {
 				]);
 			}
 
-			echo json_encode(['data' => $clean_categories]);
+			sendResponse($clean_categories);
 		} else {
-			echo json_encode(['data' => []]);
+			sendResponse();
 		}
 	}
 }
 
+// CREATE CATEGORY
+if($method == 'POST') {
+	$data = json_decode(file_get_contents("php://input"));
+
+	if(isset($data->name) && !empty($data->name)) {
+		$category->__set('name', $data->name);
+
+		if($category->addCategory()) {
+			sendResponse();
+		} else {
+			sendResponse([], 500);
+		}
+	} else {
+		sendResponse([], 400, 'Please type category name');
+	}
+}
+
+// UPDATE CATEGORY
+if($method == 'PUT') {
+	$data = json_decode(file_get_contents("php://input"));
+
+	if(isset($data->id) && isset($data->name) && !empty($data->id) && !empty($data->name)) {
+		$category->__set('id', $data->id);
+		$category->__set('name', $data->name);
+
+		if($category->updateCategory()) {
+			sendResponse();
+		} else {
+			sendResponse([], 500);
+		}
+	} else {
+		sendResponse([], 400, 'Please send a valid category');
+	}
+}
+
+// DELETE CATEGORY
+if($method == 'DELETE') {
+	if(count($_GET) > 0 && !empty($_GET['id'])) {
+		$category->__set('id', $_GET['id']);
+
+		if($category->deleteCategory()) {
+			sendResponse();
+		} else {
+			sendResponse([], 500);
+		}
+	} else {
+		sendResponse([], 400, 'Please type category id');
+	}
+}
 
 ?>

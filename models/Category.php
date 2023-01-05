@@ -45,15 +45,17 @@ class Category {
 		$statement->bindParam(1, $this->id);
 		$statement->execute();
 
-		$category = $statement->fetch(PDO::FETCH_ASSOC);
+		$category = $statement->fetchAll(PDO::FETCH_ASSOC);
 
 		if(count($category) == 1) {
+			$this->id = $category[0]['id'];
+			$this->name = $category[0]['name'];
+			$this->creation_date = $category[0]['creation_date'];
 			return [[
-
+				'id' => $category[0]['id'],
+				'name' => $category[0]['name'],
+				'creation_date' => $category[0]['creation_date'],
 			]];
-			$this->id = $category['id'];
-			$this->name = $category['name'];
-			$this->creation_date = $category['creation_date'];
 		} else {
 			return [];
 		}
