@@ -5,13 +5,29 @@ class Category {
 	private $connection;
 	private $connection_schema;
 
-	public $id;
+	private $id;
 	public $name;
 	public $creation_date;
 
 	public function __construct($db) {
 		$this->connection = $db['connection'];
 		$this->connection_schema = $db['schema'];
+	}
+
+	public function __set($prop, $value) {
+		if(property_exists($this, $prop)) {
+			$this->$prop = $value;
+		} else {
+			die();
+		}
+	}
+
+	public function __get($prop) {
+		if(property_exists($this, $prop)) {
+			return $this->$prop;
+		} else {
+			die();
+		}
 	}
 
 	public function getCategories() {
@@ -31,9 +47,16 @@ class Category {
 
 		$category = $statement->fetch(PDO::FETCH_ASSOC);
 
-		$this->id = $category['id'];
-		$this->name = $category['name'];
-		$this->creation_date = $category['creation_date'];
+		if(count($category) == 1) {
+			return [[
+
+			]];
+			$this->id = $category['id'];
+			$this->name = $category['name'];
+			$this->creation_date = $category['creation_date'];
+		} else {
+			return [];
+		}
 	}
 
 	public function addCategory() {

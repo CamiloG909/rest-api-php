@@ -18,7 +18,19 @@ $method = $_SERVER['REQUEST_METHOD'];
 if($method == 'GET') {
 	if(count($_GET) > 0 && !empty($_GET['id'])) {
 		// GET CATEGORY
-		echo $_GET['id'];
+		$category->__set('id', $_GET['id']);
+
+		if($category->__get('id') != '00') {
+			$response = [
+				'id' => $category->__get('id'),
+				'name' => $category->__get('name'),
+				'creation_date' => $category->__get('creation_date')
+			];
+
+			echo json_encode(['data' => $response]);
+		} else {
+			echo json_encode(['data' => [], 'message' => 'Category not found']);
+		}
 	} else {
 		// GET ALL CATEGORIES
 		$categories = $category->getCategories();
