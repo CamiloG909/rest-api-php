@@ -21,7 +21,7 @@ Deploy✨ ...
 
 ```json
 {
-  "id": "Use for update",
+	"id": "Use for update",
 	"name": "Technology"
 }
 ```
@@ -45,7 +45,7 @@ Deploy✨ ...
 
 ```json
 {
-  "id": "Use for update",
+	"id": "Use for update",
 	"title": "Mouse gamer",
 	"description": "Some text",
 	"id_category": 98
